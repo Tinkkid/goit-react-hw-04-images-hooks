@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
@@ -10,56 +10,47 @@ import {
   SearchInput,
 } from './Searchbar.styled';
 
-export class Searchbar extends Component {
-  state = {
-    query: '',
-    images: [],
-  };
-  static propTypes = {
-    onSubmit: PropTypes.func,
-    onChange: PropTypes.func,
-  };
+export const Searchbar = ({ onSubmit }) => {
+  const [query, setQuery] = useState('');
+  const handleChange = event => setQuery(event.target.value);
 
-  handleChange = event => {
-    this.setState({ query: event.target.value });
-  };
-
-  handleSubmit = event => {
+  const handleSubmit = event => {
     event.preventDefault();
-    if (this.state.query.trim() === '') {
+    if (query.trim() === '') {
       return toast.error('Please enter your search query', {
         position: 'top-left',
-        autoClose: 4000,
+        autoClose: 1500,
         hideProgressBar: false,
         closeOnClick: true,
-        pauseOnHover: true,
         theme: 'colored',
       });
     }
-    this.props.onSubmit(this.state.query.trim().toLowerCase());
-    this.setState({ query: '' });
+    onSubmit(query.trim().toLowerCase());
+    setQuery('');
   };
 
-  render() {
-    const { query } = this.state;
-    return (
-      <SearchWrap>
-        <SearchForm onSubmit={this.handleSubmit}>
-          <SearchBtn type="submit">
-            <SearchLabel>Search</SearchLabel>
-          </SearchBtn>
+  return (
+    <SearchWrap>
+      <SearchForm onSubmit={handleSubmit}>
+        <SearchBtn type="submit">
+          <SearchLabel>Search</SearchLabel>
+        </SearchBtn>
 
-          <SearchInput
-            value={query}
-            type="text"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            onChange={this.handleChange}
-          />
-        </SearchForm>
-        {/* <Toaster /> */}
-      </SearchWrap>
-    );
-  }
-}
+        <SearchInput
+          value={query}
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          onChange={handleChange}
+        />
+      </SearchForm>
+      {/* <Toaster /> */}
+    </SearchWrap>
+  );
+};
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func,
+  onChange: PropTypes.func,
+};
